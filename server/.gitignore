@@ -1,0 +1,10 @@
+# Sensitive Environment Variables 
+.env
+*.env
+
+# Dependency Folders 
+node_modules/
+
+
+
+
