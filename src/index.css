@@ -1,0 +1,13 @@
+@import "tailwindcss";
+@layer components{
+    .navlink{
+        @apply text-zinc-800 font-semibold tracking-wider hover:text-orange-500;
+    }
+
+}
+/* *{
+    border: 1px solid red;
+} */
+ html {
+  scroll-behavior: smooth;
+}
