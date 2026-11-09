@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
+import authRoutes from "./routes/authRoutes.js";
 
 dotenv.config();
 
@@ -24,6 +25,10 @@ app.get("/api/health", (req, res) => {
     message: "FoodHouse Backend is running!",
   });
 });
+
+
+// Authentication routes
+app.use("/api/v1/auth", authRoutes);
 
 // Start server after database connection
 const startServer = async () => {
