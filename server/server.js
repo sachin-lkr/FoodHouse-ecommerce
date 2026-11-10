@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
 
 dotenv.config();
 
@@ -29,6 +30,9 @@ app.get("/api/health", (req, res) => {
 
 // Authentication routes
 app.use("/api/v1/auth", authRoutes);
+
+// Product routes
+app.use("/api/v1/products", productRoutes);
 
 // Start server after database connection
 const startServer = async () => {
