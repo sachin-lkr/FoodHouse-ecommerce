@@ -58,11 +58,36 @@ export const createProduct = async (req, res) => {
 
 
 
-// Get All Products API
+// Get All Products controller
 export const getAllProducts = async (req, res) => {
   try {
+     // Get search keyword from URL
+    const { search,category } = req.query;
 
-    const products = await Product.find();
+    let filter = {};
+
+    // Apply search filter if keyword exists
+    if (search && search.trim()) {
+      const keyword = search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+      filter = {
+        $or: [
+          { name: { $regex: keyword, $options: "i" } },
+          { category: { $regex: keyword, $options: "i" } },
+          { description: { $regex: keyword, $options: "i" } },
+        ],
+      };
+    };
+
+      // Category filter
+    if (category && category.trim()) {
+      filter.category = {
+        $regex: `^${category.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+        $options: "i",
+      };
+    }
+     // Fetch filtered products
+    const products = await Product.find(filter);
 
     return res.status(200).json({
       success: true,
@@ -82,7 +107,7 @@ export const getAllProducts = async (req, res) => {
 
 
 
-// Get Single Product API
+// Get Single Product controller
 export const getSingleProduct = async (req, res) => {
   try {
     
@@ -121,3 +146,5 @@ export const getSingleProduct = async (req, res) => {
     });
   }
 };
+
+
