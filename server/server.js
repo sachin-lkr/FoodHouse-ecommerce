@@ -6,6 +6,7 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 dotenv.config();
 
@@ -37,6 +38,9 @@ app.use("/api/v1/products", productRoutes);
 
 // Cart Routes
 app.use("/api/v1/cart", cartRoutes);
+
+//Order Routes
+app.use("/api/v1/order", orderRoutes);
 
 // Start server after database connection
 const startServer = async () => {
