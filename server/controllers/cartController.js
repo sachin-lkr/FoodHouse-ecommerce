@@ -117,3 +117,146 @@ export const getCart = async (req, res) => {
     });
   }
 };
+
+
+// Update Cart Product Quantity
+export const updateCartQuantity = async (req, res) => {
+  try {
+    const { productId, quantity } = req.body;
+
+    
+    if (!productId || !Number.isInteger(quantity) || quantity < 1) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid product ID and quantity are required",
+      });
+    }
+
+    // Find user's cart
+    const cart = await Cart.findOne({
+      user: req.user._id,
+    });
+
+    if (!cart) {
+      return res.status(404).json({
+        success: false,
+        message: "Cart not found",
+      });
+    }
+
+    // Find product in cart
+    const cartItem = cart.products.find(
+      (item) => item.product.toString() === productId
+    );
+
+    if (!cartItem) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found in cart",
+      });
+    }
+
+    
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    if (quantity > product.stock) {
+      return res.status(400).json({
+        success: false,
+        message: "Requested quantity exceeds available stock",
+      });
+    }
+
+    // Update quantity
+    cartItem.quantity = quantity;
+
+    await cart.save();
+
+    // Fetch updated cart with product details
+    const updatedCart = await Cart.findById(cart._id)
+      .populate("products.product");
+
+    return res.status(200).json({
+      success: true,
+      message: "Cart quantity updated successfully",
+      cart: updatedCart,
+    });
+  } catch (error) {
+    console.error("Update Cart Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+
+
+// Remove Item from Cart
+export const removeFromCart = async (req, res) => {
+  try {
+    const { productId } = req.body;
+
+   
+    if (!productId) {
+      return res.status(400).json({
+        success: false,
+        message: "Product ID is required",
+      });
+    }
+
+    //  logged-in user's 
+    const cart = await Cart.findOne({
+      user: req.user._id,
+    });
+
+    if (!cart) {
+      return res.status(404).json({
+        success: false,
+        message: "Cart not found",
+      });
+    }
+
+    // Check product exists in cart
+    const productExists = cart.products.some(
+      (item) => item.product.toString() === productId
+    );
+
+    if (!productExists) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found in cart",
+      });
+    }
+
+    // Remove  product 
+    cart.products = cart.products.filter(
+      (item) => item.product.toString() !== productId
+    );
+
+    await cart.save();
+
+    const updatedCart = await Cart.findById(cart._id)
+      .populate("products.product");
+
+    return res.status(200).json({
+      success: true,
+      message: "Product removed from cart successfully",
+      cart: updatedCart,
+    });
+  } catch (error) {
+    console.error("Remove Cart Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
