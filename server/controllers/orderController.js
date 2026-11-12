@@ -177,3 +177,67 @@ export const getSingleOrder = async (req, res) => {
   }
 };
 
+
+
+// Cancel Order
+export const cancelOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    // Find order logged-in user
+    const order = await Order.findOne({
+      _id: orderId,
+      user: req.user._id,
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Check whether order can be cancelled
+    if (!["Pending", "Confirmed"].includes(order.orderStatus)) {
+      return res.status(400).json({
+        success: false,
+        message: "This order cannot be cancelled",
+      });
+    }
+
+    // Restore product stock
+    for (const item of order.products) {
+      await Product.findByIdAndUpdate(item.product, {
+        $inc: {
+          stock: item.quantity,
+        },
+      });
+    }
+
+    // Update order status
+    order.orderStatus = "Cancelled";
+
+    await order.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Order cancelled successfully",
+      order,
+    });
+  } catch (error) {
+    console.error("Cancel Order Error:", error);
+
+    if (error.name === "CastError") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid order ID",
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
