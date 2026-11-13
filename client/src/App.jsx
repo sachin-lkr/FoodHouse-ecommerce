@@ -9,7 +9,6 @@ import Meat from "./pages/Meat";
 import AllCategoury from "./pages/AllCategoury"
 import Footer from "./components/Footer";
 
-
 function App() {
   return (
     <BrowserRouter>

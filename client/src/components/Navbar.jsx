@@ -10,12 +10,16 @@ import CartCard from "../components/CartCard";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import WishlistCart from "../components/WishlistCart";
+import Signup from "./Signup";
+import Login from "./Login";
 
 function Navbar() {
   const [show, setShow] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showCart, setCloseCart] = useState(false);
   const [favorite, setFavorite] = useState(false);
+  const [showSignup, setShowSignup] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -95,6 +99,13 @@ function Navbar() {
       </div>
       {/* icons */}
       <div className="flex gap-x-2 md:gap-x-4 items-center  md:ml-2  ">
+        {/* Login / Signup Button */}
+        <button
+          onClick={() => setShowSignup(true)}
+          className="bg-orange-500 hover:bg-orange-600 text-white text-sm px-3.5 py-1.5 rounded-xl font-medium transition-all cursor-pointer hidden sm:block"
+        >
+          Login
+        </button>
         <div
           className="cursor-pointer flex justify-center items-center relative"
           onClick={() => setFavorite(true)}
@@ -217,7 +228,7 @@ function Navbar() {
         )}
       </nav>
 
-      {/* Your Wishlist */}
+      {/* Wishlist */}
       <nav
         className={` lg:w-[30vw] w-[100vw] h-screen bg-white fixed top-0 right-0 py-10 px-4 transition-all duration-500 shadow-xl ${favorite ? "translate-x-0" : "translate-x-full"}`}
       >
@@ -258,6 +269,23 @@ function Navbar() {
           </div>
         )}
       </nav>
+      {/* Login Modal Popup */}
+      <Login
+        isOpen={showLogin}
+        onClose={() => setShowLogin(false)}
+        onSwitchToSignup={() => {
+          setShowLogin(false); // Login close
+          setShowSignup(true); // Signup opne
+        }}
+      />
+      <Signup
+        isOpen={showSignup}
+        onClose={() => setShowSignup(false)}
+        onSwitchToLogin={() => {
+          setShowSignup(false); // Signup close
+          setShowLogin(true);// Signup open
+        }}
+      />
     </div>
   );
 }
