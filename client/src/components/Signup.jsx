@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+import api from "../api/axios.js"
 
 function Signup({ isOpen, onClose, onSwitchToLogin }) {
   const [formData, setFormData] = useState({
@@ -8,7 +9,7 @@ function Signup({ isOpen, onClose, onSwitchToLogin }) {
     email: "",
     password: "",
   });
-
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   if (!isOpen) return null;
@@ -17,16 +18,33 @@ function Signup({ isOpen, onClose, onSwitchToLogin }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    console.log("Signup Data:", formData);
-    setFormData({
-      name: "",
-      email: "",
-      password: "",
-    });
-  };
+    setLoading(true);
+    try {
+      // Backend endpoint register
+      const response = await api.post("auth/register", formData);
 
+      console.log("Signup Success:", response.data);
+
+      // Form reset 
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+      });
+
+      alert("Account created successfully! Please login.");
+      onSwitchToLogin(); 
+    } catch (err) {
+      const errorMsg =
+        err.response?.data?.message || "Something went wrong. Please try again.";
+      console.error("Signup Error:", errorMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
+   
   return (
     <div
       onClick={onClose}

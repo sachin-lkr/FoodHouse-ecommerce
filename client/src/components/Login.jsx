@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+import api from "../api/axios.js";
+import { useNavigate } from "react-router-dom";
 
 function Login({ isOpen, onClose, onSwitchToSignup }) {
   const [formData, setFormData] = useState({
@@ -9,6 +11,7 @@ function Login({ isOpen, onClose, onSwitchToSignup }) {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
 
@@ -16,13 +19,32 @@ function Login({ isOpen, onClose, onSwitchToSignup }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login Data:", formData);
-    setFormData({
-      email: "",
-      password: "",
-    });
+    setLoading(true);
+    try {
+      // Backend endpoint login
+      const response = await api.post("auth/login", formData);
+
+      console.log("Signup Success:", response.data);
+      // Form reset
+      setFormData({
+        email: "",
+        password: "",
+      });
+
+      alert("login successfully!");
+      onClose(); // 1. close model
+      navigate("/");
+    } catch (err) {
+      console.error("Axios Error Details:", err.response || err.message);
+      const errorMsg =
+        err.response?.data?.message ||
+        "Something went wrong. Please try again.";
+      console.error("Signup Error:", errorMsg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

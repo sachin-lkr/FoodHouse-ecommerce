@@ -18,8 +18,6 @@ function Home(){
             <Discount/>
             <Process/>
             <Testimonial/>
-        
-
         </div>
     )
 }

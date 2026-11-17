@@ -1,10 +1,11 @@
 import { useState } from "react";
 import Header from "./Header";
 import { NavLink } from "react-router";
-import productsList from "../data/products"
+import { useSelector } from "react-redux";
 import Card from "../components/Card"
 
 function OurProducts() {
+  const { items: productsList,loading,error,} = useSelector((state) => state.products);
   const categoury = ["All", "Fruits", "Vegetables", "Dairy", "SeaFood"];
   const [activeTabs, setActiveTabs] = useState("All");
 
@@ -27,7 +28,7 @@ function OurProducts() {
           {categoury.map((item) => {
             return (
               <button
-                key={item}
+                key={item._id}
                 className={`cursor-pointer font-bold md:text-xl md:py-2 py-1 md:px-4 px-2  rounded-xl ${activeTabs === item ? "bg-gradient-to-b from-orange-400 to-orange-500 text-white " : " bg-zinc-100 text-zinc-600"}`}
                 onClick={() => {
                   setActiveTabs(item);

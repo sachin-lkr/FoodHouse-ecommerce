@@ -8,8 +8,14 @@ import Fruits from "./pages/Fruits";
 import Meat from "./pages/Meat";
 import AllCategoury from "./pages/AllCategoury"
 import Footer from "./components/Footer";
-
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { fetchAllProducts } from "./Redux/productSlice";
 function App() {
+   const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchAllProducts());
+  }, [dispatch]);
   return (
     <BrowserRouter>
       <Navbar />
@@ -28,3 +34,4 @@ function App() {
 }
 
 export default App;
+
