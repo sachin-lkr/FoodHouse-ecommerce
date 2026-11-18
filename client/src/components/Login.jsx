@@ -3,6 +3,8 @@ import { RxCross2 } from "react-icons/rx";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import api from "../api/axios.js";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../Redux/authSlice";
 
 function Login({ isOpen, onClose, onSwitchToSignup }) {
   const [formData, setFormData] = useState({
@@ -12,7 +14,10 @@ function Login({ isOpen, onClose, onSwitchToSignup }) {
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  // Initialize navigate
+  const navigate = useNavigate();
+  //Initialize dispatch
+  const dispatch = useDispatch();
   if (!isOpen) return null;
 
   const handleChange = (e) => {
@@ -27,6 +32,7 @@ function Login({ isOpen, onClose, onSwitchToSignup }) {
       const response = await api.post("auth/login", formData);
 
       console.log("Signup Success:", response.data);
+      dispatch(setCredentials(response.data));
       // Form reset
       setFormData({
         email: "",
@@ -34,7 +40,7 @@ function Login({ isOpen, onClose, onSwitchToSignup }) {
       });
 
       alert("login successfully!");
-      onClose(); // 1. close model
+      onClose(); //  close model
       navigate("/");
     } catch (err) {
       console.error("Axios Error Details:", err.response || err.message);

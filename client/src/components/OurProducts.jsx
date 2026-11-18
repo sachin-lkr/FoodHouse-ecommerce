@@ -9,11 +9,11 @@ function OurProducts() {
   const categoury = ["All", "Fruits", "Vegetables", "Dairy", "SeaFood"];
   const [activeTabs, setActiveTabs] = useState("All");
 
-  let fillteredItems= activeTabs==="All"?productsList: productsList.filter(item=>item.category===activeTabs);
+  let fillteredItems= activeTabs==="All"?productsList:productsList.filter(item=>item.category===activeTabs);
  
   const renderCard=fillteredItems.slice(0,12).map((product)=>{
     return(
-      <Card  product={product} key={product.id}/>
+      <Card  product={product} key={product._id}/>
     )
   })
 
@@ -28,7 +28,7 @@ function OurProducts() {
           {categoury.map((item) => {
             return (
               <button
-                key={item._id}
+                key={item}
                 className={`cursor-pointer font-bold md:text-xl md:py-2 py-1 md:px-4 px-2  rounded-xl ${activeTabs === item ? "bg-gradient-to-b from-orange-400 to-orange-500 text-white " : " bg-zinc-100 text-zinc-600"}`}
                 onClick={() => {
                   setActiveTabs(item);

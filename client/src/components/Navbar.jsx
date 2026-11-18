@@ -8,11 +8,12 @@ import Logo from "./Logo";
 import { RxCross2 } from "react-icons/rx";
 import CartCard from "../components/CartCard";
 import { NavLink } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import WishlistCart from "../components/WishlistCart";
 import Signup from "./Signup";
 import Login from "./Login";
-
+import api from "../api/axios";
+import { logout } from "../Redux/authSlice";
 function Navbar() {
   const [show, setShow] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -20,7 +21,8 @@ function Navbar() {
   const [favorite, setFavorite] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-
+  const dispatch = useDispatch();
+  const { userInfo } = useSelector((state) => state.auth);
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -29,6 +31,27 @@ function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+  const handleLogout = async () => {
+    try {
+      await api.post("/auth/logout"); // Backend cookie clear
+    } catch (error) {
+      console.error("Logout API error:", error);
+    } finally {
+      //Remove user data from Redux state and localStorage on logout
+      dispatch(logout());
+      alert("Logged out successfully!");
+    }
+  };
+
+  // Place Order Handler
+  const handlePlaceOrder = () => {
+    if (!userInfo) {
+      setCloseCart(false); // Close the cart drawer
+      setShowLogin(true); // Open the login popup
+    } else {
+      alert("Proceeding to order placement...");
+    }
+  };
   const [subtotal, setSubtotal] = useState(0);
 
   const items = useSelector((state) => state.cart);
@@ -100,12 +123,29 @@ function Navbar() {
       {/* icons */}
       <div className="flex gap-x-2 md:gap-x-4 items-center  md:ml-2  ">
         {/* Login / Signup Button */}
-        <button
-          onClick={() => setShowSignup(true)}
-          className="bg-orange-500 hover:bg-orange-600 text-white text-sm px-3.5 py-1.5 rounded-xl font-medium transition-all cursor-pointer hidden sm:block"
-        >
-          Login
-        </button>
+        {userInfo ? (
+          <div className="hidden sm:flex items-center gap-2">
+            <div
+              title={userInfo.user?.name || userInfo.name} 
+              className="w-8 h-8 rounded-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold flex items-center justify-center uppercase shadow-sm transition-all cursor-pointer"
+            >
+              {(userInfo.user?.name || userInfo.name || "U").charAt(0)}
+            </div>
+            <button
+              onClick={handleLogout}
+              className="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 text-sm px-3 py-1.5 rounded-xl font-medium transition-all cursor-pointer"
+            >
+              Logout
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowLogin(true)}
+            className="bg-orange-500 hover:bg-orange-600 text-white text-sm px-3.5 py-1.5 rounded-xl font-medium transition-all cursor-pointer hidden sm:block"
+          >
+            Login
+          </button>
+        )}
         <div
           className="cursor-pointer flex justify-center items-center relative"
           onClick={() => setFavorite(true)}
@@ -173,6 +213,31 @@ function Navbar() {
             />
             <IoSearchSharp className="text-3xl text-white bg-orange-500 rounded-full p-1" />
           </li>
+          <li>
+            {userInfo ? (
+              <button
+                onClick={handleLogout}
+                className="bg-zinc-800 text-white px-5 py-1.5 rounded-xl font-medium cursor-pointer"
+              >
+                Logout (<div
+              title={userInfo.user?.name || userInfo.name} 
+              className="w-8 h-8 rounded-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold flex items-center justify-center uppercase shadow-sm transition-all cursor-pointer"
+            >
+              {(userInfo.user?.name || userInfo.name || "U").charAt(0)}
+            </div>)
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  setShow(true);
+                  setShowLogin(true);
+                }}
+                className="bg-orange-500 text-white px-5 py-1.5 rounded-xl font-medium cursor-pointer"
+              >
+                Login
+              </button>
+            )}
+          </li>
         </ul>
       </div>
       {/* Add to Cart */}
@@ -214,7 +279,7 @@ function Navbar() {
                   RS {(subtotal + 50).toFixed(2)}/-
                 </span>
               </div>
-              <button className="text-center py-2 px-10 rounded-2xl bg-orange-500 text-white font-bold cursor-pointer">
+              <button onClick={handlePlaceOrder} className="text-center py-2 px-10 rounded-2xl bg-orange-500 text-white font-bold cursor-pointer">
                 Place Order
               </button>
             </div>
@@ -283,7 +348,7 @@ function Navbar() {
         onClose={() => setShowSignup(false)}
         onSwitchToLogin={() => {
           setShowSignup(false); // Signup close
-          setShowLogin(true);// Signup open
+          setShowLogin(true); // Signup open
         }}
       />
     </div>

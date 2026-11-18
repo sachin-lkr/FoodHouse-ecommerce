@@ -39,7 +39,7 @@ function Card({ product }) {
 
     dispatch(
       AddWishlist({
-        id: product.id,
+        id: product._id,
         name: product.name,
         image: product.image,
       }),
@@ -106,7 +106,7 @@ function Card({ product }) {
         onClick={() => {
           dispatch(
             addItem({
-              id: product.id,
+              id: product._id,
               name: product.name,
               image: product.image,
               price: finalPrice,
