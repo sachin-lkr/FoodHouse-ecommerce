@@ -39,9 +39,10 @@ function Card({ product }) {
 
     dispatch(
       AddWishlist({
-        id: product._id,
+        _id: product._id,
         name: product.name,
         image: product.image,
+        price: finalPrice,
       }),
     );
   };
@@ -106,11 +107,11 @@ function Card({ product }) {
         onClick={() => {
           dispatch(
             addItem({
-              id: product._id,
+              _id: product._id,
               name: product.name,
               image: product.image,
               price: finalPrice,
-              qty: "1",
+              qty: 1,
             }),
           );
           showToast(product);

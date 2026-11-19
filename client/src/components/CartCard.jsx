@@ -4,11 +4,12 @@ import { IncrementQty, RemoveItems, DecrementQty } from "../Redux/slice";
 
 function CartCard({ items }) {
   if (!items) return null;
-  const { id, name, image, price, qty } = items;
+  const { _id, name, image, price, qty } = items;
+  const itemId = _id;
   let dispatch = useDispatch();
   return (
     <div
-      id={id}
+      id={itemId}
       className="w-full shadow-md flex justify-between  items-center p-2 rounded-xl"
     >
       {/* left side */}
@@ -22,8 +23,10 @@ function CartCard({ items }) {
             {/* Increment */}
             <div
               className="cursor-pointer"
-              onClick={() => {
-                dispatch(DecrementQty(items.id));
+             onClick={() => {
+                if (qty > 1) {
+                  dispatch(DecrementQty(itemId));
+                }
               }}
             >
               -
@@ -33,7 +36,7 @@ function CartCard({ items }) {
             <div
               className="cursor-pointer"
               onClick={() => {
-                dispatch(IncrementQty(items.id));
+                dispatch(IncrementQty(itemId));
               }}
             >
               +
@@ -48,7 +51,7 @@ function CartCard({ items }) {
         </h3>
         <RiDeleteBin6Line
           className="text-red-500 text-xl self-end cursor-pointer"
-          onClick={() => dispatch(RemoveItems(id))}
+          onClick={() => dispatch(RemoveItems(itemId))}
         />
       </div>
     </div>

@@ -14,6 +14,7 @@ import Signup from "./Signup";
 import Login from "./Login";
 import api from "../api/axios";
 import { logout } from "../Redux/authSlice";
+import { ClearWishlist } from "../Redux/wishlistSlice.js";
 function Navbar() {
   const [show, setShow] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -307,7 +308,7 @@ function Navbar() {
         {/* card Add */}
         <div className="max-h-[60vh] overflow-y-auto ">
           {wishlistItems.map((item) => (
-            <WishlistCart key={item.id} item={item} />
+            <WishlistCart key={item._id} item={item} />
           ))}
         </div>
         {/* price count */}
@@ -321,7 +322,7 @@ function Navbar() {
               </div>
             </div>
             <div className="flex flex-col mt-2">
-              <button className="text-center py-2 px-10 rounded-2xl bg-orange-500 text-white font-bold cursor-pointer">
+              <button type="button" onClick={() => dispatch( ClearWishlist())} className="text-center py-2 px-10 rounded-2xl bg-orange-500 text-white font-bold cursor-pointer">
                 All clear
               </button>
             </div>
