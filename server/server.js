@@ -15,11 +15,26 @@ const app = express();
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({
-  origin: process.env.CLIENT_URL,
-  credentials: true,
-}));
-app.use(cookieParser());
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://food-house-lake.vercel.app",
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`Not allowed by CORS: ${origin}`));
+      }
+    },
+    credentials: true,
+  })
+);
+
 
 // Health API
 app.get("/api/health", (req, res) => {
