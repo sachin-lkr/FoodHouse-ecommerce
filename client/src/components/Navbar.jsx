@@ -15,6 +15,7 @@ import Login from "./Login";
 import api from "../api/axios";
 import { logout } from "../Redux/authSlice";
 import { ClearWishlist } from "../Redux/wishlistSlice.js";
+import SearchBar from "./SearchBar.jsx";
 function Navbar() {
   const [show, setShow] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -112,14 +113,7 @@ function Navbar() {
             </NavLink>
           </li>
         </ul>
-        <div className="flex border-orange-500  border-2 p-1 rounded-full ">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="focus:outline-none px-3"
-          />
-          <IoSearchSharp className="text-3xl text-white bg-gradient-to-b from-orange-400 to-orange-500 rounded-full p-1" />
-        </div>
+        <SearchBar />
       </div>
       {/* icons */}
       <div className="flex gap-x-2 md:gap-x-4 items-center  md:ml-2  ">
