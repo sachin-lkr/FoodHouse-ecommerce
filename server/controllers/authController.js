@@ -1,6 +1,7 @@
 import User from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+
 // Register Controller
 export const registerUser = async (req, res) => {
   try {
@@ -36,8 +37,14 @@ export const registerUser = async (req, res) => {
       password: hashedPassword,
     });
 
-    // Send response without password
-    return res.status(201).json({
+    // Generate JWT token
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+    // Store JWT token in a cookie
+    res.cookie("token",token)
+     // Send response without password
+     res.status(201).json({
       success: true,
       message: "User registered successfully",
       user: {
@@ -49,10 +56,9 @@ export const registerUser = async (req, res) => {
     });
   } catch (error) {
     console.error("Register Error:", error);
-
     return res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: error.message,
     });
   }
 };
@@ -127,7 +133,7 @@ export const loginUser = async (req, res) => {
 };
 
 // Logout Controller
-export const logoutUser= async(req, res) =>{
+export const logoutUser = async (req, res) => {
   const token = req.cookies.token;
 
   res.clearCookie("token", {
@@ -137,12 +143,9 @@ export const logoutUser= async(req, res) =>{
   });
 
   res.status(200).json({
-    message: "User logged out successfully",
+    message: "User Logout successfully",
   });
 };
-
-
-
 
 // Get Logged-in User Profile
 export const getProfile = async (req, res) => {
@@ -152,10 +155,8 @@ export const getProfile = async (req, res) => {
       message: "Profile fetched successfully",
       user: req.user,
     });
-
   } catch (error) {
     console.error("Profile Error:", error);
-
     return res.status(500).json({
       success: false,
       message: "Internal server error",

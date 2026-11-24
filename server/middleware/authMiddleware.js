@@ -6,8 +6,7 @@ import User from "../models/userModel.js";
 export const protect = async (req, res, next) => {
   try {
     
-    const token = req.cookies.token;
-
+    let token = req.cookies.token;
     // Check token availability
     if (!token) {
       return res.status(401).json({
@@ -41,7 +40,7 @@ export const protect = async (req, res, next) => {
   } catch (error) {
     return res.status(401).json({
       success: false,
-      message: "Invalid or expired token.",
+      message: error.message,
     });
   }
 };

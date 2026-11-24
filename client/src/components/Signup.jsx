@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
-import api from "../api/axios.js"
+import { useAuth } from "../hooks/useAuth.js";
 
 function Signup({ isOpen, onClose, onSwitchToLogin }) {
   const [formData, setFormData] = useState({
@@ -9,39 +9,31 @@ function Signup({ isOpen, onClose, onSwitchToLogin }) {
     email: "",
     password: "",
   });
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const { handleRegister, loading, error } = useAuth();
 
   if (!isOpen) return null;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      // Backend endpoint register
-      const response = await api.post("auth/register", formData);
 
-      console.log("Signup Success:", response.data);
+    const res = await handleRegister({
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+    });
 
-      // Form reset 
+    if (res.success) {
       setFormData({
         name: "",
         email: "",
         password: "",
       });
-
-      alert("Account created successfully! Please login.");
-      onSwitchToLogin(); 
-    } catch (err) {
-      const errorMsg =
-        err.response?.data?.message || "Something went wrong. Please try again.";
-      console.error("Signup Error:", errorMsg);
-    } finally {
-      setLoading(false);
+      onClose();
     }
   };
    
@@ -142,9 +134,10 @@ function Signup({ isOpen, onClose, onSwitchToLogin }) {
           {/* Submit Button */}
           <button
             type="submit"
+            disabled={loading}
             className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl shadow-md transition-all cursor-pointer mt-2"
           >
-            Sign Up
+            {loading ? "Signing up..." : "Sign Up"}
           </button>
         </form>
 

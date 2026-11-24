@@ -16,6 +16,7 @@ import api from "../api/axios";
 import { logout } from "../Redux/authSlice";
 import { ClearWishlist } from "../Redux/wishlistSlice.js";
 import SearchBar from "./SearchBar.jsx";
+import { useAuth } from "../hooks/useAuth.js";
 function Navbar() {
   const [show, setShow] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -25,6 +26,7 @@ function Navbar() {
   const [showLogin, setShowLogin] = useState(false);
   const dispatch = useDispatch();
   const { userInfo } = useSelector((state) => state.auth);
+  const { handleLogout, loading: authLoading } = useAuth();
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -33,16 +35,8 @@ function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-  const handleLogout = async () => {
-    try {
-      await api.post("/auth/logout"); // Backend cookie clear
-    } catch (error) {
-      console.error("Logout API error:", error);
-    } finally {
-      //Remove user data from Redux state and localStorage on logout
-      dispatch(logout());
-      alert("Logged out successfully!");
-    }
+  const  onLogoutClick = async () => {
+   await handleLogout();
   };
 
   // Place Order Handler
@@ -127,7 +121,7 @@ function Navbar() {
               {(userInfo.user?.name || userInfo.name || "U").charAt(0)}
             </div>
             <button
-              onClick={handleLogout}
+              onClick={onLogoutClick}
               className="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 text-sm px-3 py-1.5 rounded-xl font-medium transition-all cursor-pointer"
             >
               Logout
@@ -211,7 +205,7 @@ function Navbar() {
           <li>
             {userInfo ? (
               <button
-                onClick={handleLogout}
+                onClick={onLogoutClick}
                 className="bg-zinc-800 text-white px-5 py-1.5 rounded-xl font-medium cursor-pointer"
               >
                 Logout (<div

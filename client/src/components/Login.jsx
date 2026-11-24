@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
-import api from "../api/axios.js";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setCredentials } from "../Redux/authSlice";
+import {useAuth} from "../hooks/useAuth.js"
 
 function Login({ isOpen, onClose, onSwitchToSignup }) {
   const [formData, setFormData] = useState({
@@ -13,11 +11,8 @@ function Login({ isOpen, onClose, onSwitchToSignup }) {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  // Initialize navigate
   const navigate = useNavigate();
-  //Initialize dispatch
-  const dispatch = useDispatch();
+  const { handleLogin, loading, error } = useAuth();
   if (!isOpen) return null;
 
   const handleChange = (e) => {
@@ -26,32 +21,19 @@ function Login({ isOpen, onClose, onSwitchToSignup }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      // Backend endpoint login
-      const response = await api.post("auth/login", formData);
-
-      console.log("Signup Success:", response.data);
-      dispatch(setCredentials(response.data));
-      // Form reset
-      setFormData({
-        email: "",
-        password: "",
-      });
-
-      alert("login successfully!");
+    const res = await handleLogin({
+      email: formData.email,
+      password: formData.password,
+    });
+    if (res.success) {
+    setFormData({
+      email: "",
+      password: "",
+    });
       onClose(); //  close model
       navigate("/");
-    } catch (err) {
-      console.error("Axios Error Details:", err.response || err.message);
-      const errorMsg =
-        err.response?.data?.message ||
-        "Something went wrong. Please try again.";
-      console.error("Signup Error:", errorMsg);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }
+};
 
   return (
     <div
@@ -133,7 +115,7 @@ function Login({ isOpen, onClose, onSwitchToSignup }) {
             type="submit"
             className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl shadow-md transition-all cursor-pointer mt-2"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 

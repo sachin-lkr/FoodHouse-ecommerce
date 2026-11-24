@@ -1,12 +1,47 @@
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useDispatch } from "react-redux";
 import { IncrementQty, RemoveItems, DecrementQty } from "../Redux/slice";
-
+import { updateCartQtyBackend, removeCartItemBackend,} from "../Redux/cartSlice";
 function CartCard({ items }) {
+    let dispatch = useDispatch();
   if (!items) return null;
-  const { _id, name, image, price, qty } = items;
+  const { _id, name, image, price, qty: quantity} = items;
   const itemId = _id;
-  let dispatch = useDispatch();
+ const productId = items.productId || items.product?._id || items.product || _id;
+
+  // Decrease item quantity if above 1
+  const handleDecrement = () => {
+    if (quantity > 1) {
+      dispatch(
+        updateCartQtyBackend({
+          itemId,
+          productId,
+          quantity: quantity - 1,
+        }),
+      );
+    }
+  };
+
+  // Increase item quantity by 1
+  const handleIncrement = () => {
+    dispatch(
+      updateCartQtyBackend({
+        itemId,
+        productId,
+        quantity: quantity + 1,
+      }),
+    );
+  };
+
+  // Remove item completely from cart
+  const handleRemove = () => {
+    dispatch(
+      removeCartItemBackend({
+        itemId,
+        productId,
+      }),
+    );
+  };
   return (
     <div
       id={itemId}
@@ -21,24 +56,12 @@ function CartCard({ items }) {
           <h3>{name}</h3>
           <div className="w-[100px] items-center ring-2 text-orange-600 ring-orange-400 rounded-xl  flex justify-around items-center ">
             {/* Increment */}
-            <div
-              className="cursor-pointer"
-             onClick={() => {
-                if (qty > 1) {
-                  dispatch(DecrementQty(itemId));
-                }
-              }}
-            >
+            <div className="cursor-pointer" onClick={handleDecrement}>
               -
             </div>
-            <div className="bg-zinc-300 px-2">{qty}</div>
+            <div className="bg-zinc-300 px-2">{quantity}</div>
             {/* Decrement */}
-            <div
-              className="cursor-pointer"
-              onClick={() => {
-                dispatch(IncrementQty(itemId));
-              }}
-            >
+            <div className="cursor-pointer" onClick={handleIncrement}>
               +
             </div>
           </div>
@@ -47,11 +70,11 @@ function CartCard({ items }) {
       {/* right side */}
       <div className="flex flex-col gap-4">
         <h3 className="text-orange-600 text-xl">
-          RS.{(price * qty).toFixed(2)}/-
+          RS.{(price * quantity).toFixed(2)}/-
         </h3>
         <RiDeleteBin6Line
           className="text-red-500 text-xl self-end cursor-pointer"
-          onClick={() => dispatch(RemoveItems(itemId))}
+          onClick={handleRemove}
         />
       </div>
     </div>
