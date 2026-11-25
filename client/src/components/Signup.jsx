@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAuth } from "../hooks/useAuth.js";
+import showToast from "../utils/showToast.js";
 
 function Signup({ isOpen, onClose, onSwitchToLogin }) {
   const [formData, setFormData] = useState({
@@ -9,7 +10,6 @@ function Signup({ isOpen, onClose, onSwitchToLogin }) {
     email: "",
     password: "",
   });
-  // const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { handleRegister, loading, error } = useAuth();
 
@@ -34,9 +34,14 @@ function Signup({ isOpen, onClose, onSwitchToLogin }) {
         password: "",
       });
       onClose();
+      showToast(res?.data?.message || "Register successful");
+    } else {
+     const errorMsg =
+        res?.error || res?.message || res?.data?.message || "Registion Fail!";
+      showToast(errorMsg, "error");
     }
   };
-   
+
   return (
     <div
       onClick={onClose}

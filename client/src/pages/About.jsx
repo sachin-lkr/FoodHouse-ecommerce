@@ -1,6 +1,7 @@
 import aboutBanner from "../assets/all-banner.jpg";
 import Banner from "../components/Banner";
 import { FaLeaf, FaTruck, FaFish, FaUsers } from "react-icons/fa";
+import Navbar from "../components/Navbar/Navbar"
 
 const About = () => {
   return (
@@ -106,7 +107,6 @@ const About = () => {
 
         </div>
       </section>
-
     </div>
   );
 };

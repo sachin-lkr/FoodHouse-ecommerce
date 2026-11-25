@@ -3,8 +3,7 @@ import { IoStar } from "react-icons/io5";
 import { useDispatch } from "react-redux";
 import { addItem } from "../Redux/slice";
 import { AddWishlist } from "../Redux/wishlistSlice";
-import Toastify from "toastify-js";
-import "toastify-js/src/toastify.css";
+import showToast from "../utils/showToast";
 import { useState } from "react";
 
 function Card({ product }) {
@@ -18,25 +17,9 @@ function Card({ product }) {
   const finalPrice = price - (price * discount) / 100;
   const inStock = stock > 0;
   let dispatch = useDispatch();
-  const showToast = (product) => {
-    Toastify({
-      text: `${product.name}  Added to Cart`,
-      duration: 2000,
-      gravity: "top",
-      position: "center",
-      style: {
-        background: "#f97316",
-        borderRadius: "12px",
-        padding: "10px",
-        fontWeight: "600",
-      },
-    }).showToast();
-  };
 //  handleWishlist
   const handleWishlist = () => {
     setLiked(!liked);
-    showToast(product);
-
     dispatch(
       AddWishlist({
         _id: product._id,
@@ -45,7 +28,20 @@ function Card({ product }) {
         price: finalPrice,
       }),
     );
+    showToast(`${product.name} Added to Wishlist`);
   };
+  const handelAddToCart=() => {
+          dispatch(
+            addItem({
+              _id: product._id,
+              name: product.name,
+              image: product.image,
+              price: finalPrice,
+              qty: 1,
+            }),
+          );
+          showToast(`${product.name} Added to Cart`);;
+        }
 
   return (
     <div className="bg-gray-100 rounded-2xl shadow-md hover:shadow-xl transition duration-300 p-4 relative group">
@@ -104,18 +100,7 @@ function Card({ product }) {
       </p>
 
       <button
-        onClick={() => {
-          dispatch(
-            addItem({
-              _id: product._id,
-              name: product.name,
-              image: product.image,
-              price: finalPrice,
-              qty: 1,
-            }),
-          );
-          showToast(product);
-        }}
+        onClick={handelAddToCart}
         disabled={!inStock}
         className={` w-full mt-3 py-2 rounded-full text-sm font-semibold transition 
         ${

@@ -36,7 +36,7 @@ export function useAuth() {
 
     try {
       const data = await registerApi({ name, email, password });
-      dispatch(setCredentials(data.user || data));
+      dispatch(setUserInfo(data.user || data));
       setLoading(false);
       return { success: true, data };
     } catch (err) {

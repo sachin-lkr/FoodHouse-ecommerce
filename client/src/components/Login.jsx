@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import {useAuth} from "../hooks/useAuth.js"
+import { useAuth } from "../hooks/useAuth.js";
+import showToast from "../utils/showToast.js";
 
 function Login({ isOpen, onClose, onSwitchToSignup }) {
   const [formData, setFormData] = useState({
@@ -26,14 +27,19 @@ function Login({ isOpen, onClose, onSwitchToSignup }) {
       password: formData.password,
     });
     if (res.success) {
-    setFormData({
-      email: "",
-      password: "",
-    });
+      setFormData({
+        email: "",
+        password: "",
+      });
+      showToast(res?.data?.message || "Login successful");
       onClose(); //  close model
       navigate("/");
-  }
-};
+    } else {
+      const errorMsg =
+        res?.error || res?.message || res?.data?.message || "Login Failed!";
+      showToast(errorMsg, "error");
+    }
+  };
 
   return (
     <div

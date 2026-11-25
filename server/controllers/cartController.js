@@ -143,7 +143,7 @@ export const updateCartQuantity = async (req, res) => {
         message: "Cart not found",
       });
     }
-
+    console.log("Payload productId:", productId, "DB products:", cart.products);
     // Find product in cart
     const cartItem = cart.products.find(
       (item) => item.product.toString() === productId
