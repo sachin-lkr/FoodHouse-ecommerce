@@ -1,19 +1,11 @@
 
 import { useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useProducts } from "../hooks/useProducts";
 import { IoSearchSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-import {
-  fetchAllProducts,
-  setSearchQuery,
-} from "../Redux/productSlice.js";
 
 function SearchBar({ className = "" }) {
-  const dispatch = useDispatch();
-
-  const { searchQuery, category } = useSelector(
-    (state) => state.products
-  );
+  const { searchQuery, category, loadProducts, changeSearch } = useProducts();
    const navigate = useNavigate();
   const timerRef = useRef(null);
     // Navigate to All Products page when input gets focused
@@ -26,21 +18,19 @@ function SearchBar({ className = "" }) {
     clearTimeout(timerRef.current);
 
     if (!searchQuery.trim()) {
-      dispatch(fetchAllProducts({ category, search: "" }));
+     loadProducts({ category, search: "" });
       return;
     }
 
     timerRef.current = setTimeout(() => {
-      dispatch(
-        fetchAllProducts({
-          category,
-          search: searchQuery.trim(),
-        })
-      );
+      loadProducts({
+        category,
+        search: searchQuery.trim(),
+      });
     }, 350);
 
     return () => clearTimeout(timerRef.current);
-  }, [searchQuery, category, dispatch]);
+  }, [searchQuery, category, loadProducts]);
 
  
 
@@ -48,12 +38,10 @@ function SearchBar({ className = "" }) {
   const handleSearch = () => {
     clearTimeout(timerRef.current);
 
-    dispatch(
-      fetchAllProducts({
-        category,
-        search: searchQuery.trim(),
-      })
-    );
+    loadProducts({
+      category,
+      search: searchQuery.trim(),
+    });
   };
    
   return (
@@ -64,9 +52,7 @@ function SearchBar({ className = "" }) {
         type="text"
         value={searchQuery}
         onFocus={handleFocus}
-        onChange={(e) =>
-          dispatch(setSearchQuery(e.target.value))
-        }
+       onChange={(e) => changeSearch(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();

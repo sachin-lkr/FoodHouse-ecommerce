@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/Navbar/Navbar";
 import Dairy from "./pages/Dairy";
 import Fruits from "./pages/Fruits";
 import Meat from "./pages/Meat";
@@ -10,12 +10,12 @@ import AllCategoury from "./pages/AllCategoury"
 import Footer from "./components/Footer";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { fetchAllProducts } from "./Redux/productSlice";
+import { useProducts } from "./hooks/useProducts";
 function App() {
-   const dispatch = useDispatch();
+   const { loadProducts } = useProducts();
   useEffect(() => {
-    dispatch(fetchAllProducts());
-  }, [dispatch]);
+    loadProducts();
+  }, [loadProducts]);
   return (
     <BrowserRouter>
       <Navbar />

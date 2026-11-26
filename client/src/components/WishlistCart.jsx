@@ -1,6 +1,7 @@
 import { useDispatch } from "react-redux";
 import { RemoveWishlist } from "../Redux/wishlistSlice.js";
 import { addItem } from "../Redux/slice";
+import showToast from "../utils/showToast.js"
 function WishlistCart({ item }) {
   const { _id, name, image,price} = item;
   let dispatch = useDispatch();
@@ -15,6 +16,7 @@ function WishlistCart({ item }) {
         qty: 1,
       })
     );
+    showToast("item Added to cart")
   };
   return (
     <div

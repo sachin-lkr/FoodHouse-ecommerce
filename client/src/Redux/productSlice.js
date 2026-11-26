@@ -1,68 +1,61 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "../api/axios";
-
-// API call using Async Thunk
-export const fetchAllProducts = createAsyncThunk(
-  "products/fetchAll",
-  async ({ category, search } = {}, { rejectWithValue }) => {
-    try {
-      // Create query parameters
-      const params = {};
-      // Add category if available
-      if (category) {
-        params.category = category;
-      }
-      // Add search if available
-      if (search) {
-        params.search = search;
-      }
-
-      const response = await axios.get("/products", {
-        params,
-      });
-      return response.data.products || response.data;
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data || "Failed to fetch products",
-      );
-    }
-  },
-);
+import { createSlice } from "@reduxjs/toolkit";
 
 const productSlice = createSlice({
   name: "products",
   initialState: {
     items: [],
+    selectedProduct: null,
     loading: false,
     error: null,
     searchQuery: "",
     category: "",
   },
   reducers: {
-    // Update search input value
+    // Store fetched products list
+    setProducts: (state, action) => {
+      state.items = Array.isArray(action.payload) ? action.payload : [];
+    },
+    // Store single product detail
+    setSelectedProduct: (state, action) => {
+      state.selectedProduct = action.payload;
+    },
+    // Toggle loading indicator
+    setLoading: (state, action) => {
+      state.loading = Boolean(action.payload);
+    },
+    // Store or clear error message
+    setError: (state, action) => {
+      state.error = action.payload;
+    },
+    // Update search query text
     setSearchQuery: (state, action) => {
       state.searchQuery = action.payload;
     },
-    // Update selected category
+    // Update active category filter
     setCategory: (state, action) => {
       state.category = action.payload;
     },
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(fetchAllProducts.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchAllProducts.fulfilled, (state, action) => {
-        state.loading = false;
-        state.items = action.payload;
-      })
-      .addCase(fetchAllProducts.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      });
+    // Clear selected single product
+    clearSelectedProduct: (state) => {
+      state.selectedProduct = null;
+    },
+    // Reset search and category filters
+    resetProductFilters: (state) => {
+      state.searchQuery = "";
+      state.category = "";
+    },
   },
 });
-export const { setSearchQuery, setCategory } = productSlice.actions;
+
+export const {
+  setProducts,
+  setSelectedProduct,
+  setLoading,
+  setError,
+  setSearchQuery,
+  setCategory,
+  clearSelectedProduct,
+  resetProductFilters,
+} = productSlice.actions;
+
 export default productSlice.reducer;

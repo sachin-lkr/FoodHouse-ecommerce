@@ -27,6 +27,7 @@ export async function addToCartApi({ productId, quantity = 1 }) {
 
 // Update product quantity in cart
 export async function updateCartQuantityApi({ productId, quantity }) {
+  console.log("update qunity",productId,quantity)
   try {
     const response = await api.put("/cart/update", {
       productId,

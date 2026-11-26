@@ -123,7 +123,7 @@ export const getCart = async (req, res) => {
 export const updateCartQuantity = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
-
+ 
     
     if (!productId || !Number.isInteger(quantity) || quantity < 1) {
       return res.status(400).json({

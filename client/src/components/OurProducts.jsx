@@ -1,23 +1,25 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Header from "./Header";
 import { NavLink } from "react-router";
-import { useSelector } from "react-redux";
 import Card from "../components/Card"
+import { useProducts } from "../hooks/useProducts";
 
 function OurProducts() {
-  const { items: productsList,loading,error,} = useSelector((state) => state.products);
+  const { products, loading, error, loadProducts } = useProducts();
   const categoury = ["All", "Fruits", "Vegetables", "Dairy", "SeaFood"];
   const [activeTabs, setActiveTabs] = useState("All");
 
-  let fillteredItems= activeTabs==="All"?productsList:productsList.filter(item=>item.category===activeTabs);
- 
+  // Fetch products from backend on initial mount
+  useEffect(() => {
+    loadProducts();
+  }, [loadProducts]);
+
+  let fillteredItems= activeTabs==="All"?products:products.filter((item)=>item.category?.toLowerCase() === activeTabs.toLowerCase());
   const renderCard=fillteredItems.slice(0,12).map((product)=>{
     return(
       <Card  product={product} key={product._id}/>
     )
   })
-
-  
   
   return (
     <section>
